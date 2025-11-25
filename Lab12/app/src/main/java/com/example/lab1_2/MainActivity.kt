@@ -1,6 +1,7 @@
 package com.example.lab1_2
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -40,6 +42,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNav() {
     val navController = rememberNavController()
+
+    LaunchedEffect(navController) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            Log.d("NAV", "Открыт экран: ${destination.route}")
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -51,14 +60,10 @@ fun AppNav() {
             modifier = Modifier.padding(padding)
         ) {
             composable("A") {
-                ScreenA(
-                    onNext = { navController.navigate("B") }
-                )
+                ScreenA(onNext = { navController.navigate("B") })
             }
             composable("B") {
-                ScreenB(
-                    onNext = { navController.navigate("C") }
-                )
+                ScreenB(onNext = { navController.navigate("C") })
             }
             composable("C") {
                 ScreenC(
@@ -78,26 +83,20 @@ fun AppNav() {
 
 @Composable
 fun ScreenA(onNext: () -> Unit) {
-    ScreenTemplate(
-        text = "Спроси меня о птицах...",
-        onNext = onNext
-    )
+    Log.d("ScreenA", "compose: recomposed")
+    ScreenTemplate(text = "Спроси меня о птицах...", onNext = onNext)
 }
 
 @Composable
 fun ScreenB(onNext: () -> Unit) {
-    ScreenTemplate(
-        text = "Что ты знаешь...",
-        onNext = onNext
-    )
+    Log.d("ScreenB", "compose: recomposed")
+    ScreenTemplate(text = "Что ты знаешь...", onNext = onNext)
 }
 
 @Composable
 fun ScreenC(onNext: () -> Unit) {
-    ScreenTemplate(
-        text = "О белолобом попугае?",
-        onNext = onNext
-    )
+    Log.d("ScreenC", "compose: recomposed")
+    ScreenTemplate(text = "О белолобом попугае?", onNext = onNext)
 }
 
 @Composable

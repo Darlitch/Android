@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.example.lab2.ui.converter.ConverterScreen
+import com.example.lab2.ui.navigation.AppNav
 import com.example.lab2.ui.theme.Lab2Theme
 
 class MainActivity : ComponentActivity() {
@@ -18,7 +19,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ConverterScreen()
+                    AppNav()
                 }
             }
         }

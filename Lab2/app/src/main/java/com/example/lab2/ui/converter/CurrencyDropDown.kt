@@ -2,11 +2,15 @@ package com.example.lab2.ui.converter
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -15,16 +19,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.unit.dp
 import com.example.lab2.domain.model.Currency
 
 @Composable
 fun CurrencyDropdown(
     items: List<Currency>,
     selectedCode: String?,
-    onSelect: (Currency) -> Unit
+    favoriteCodes: Set<String>,
+    onSelect: (Currency) -> Unit,
+    onToggleFavorite: (String) -> Unit
 ) {
     val expanded = remember { mutableStateOf(false) }
     val selectedCurrency = items.firstOrNull { it.code == selectedCode }
+    val sorted = items.sortedBy { it.code }
+    val (favorites, others) = sorted.partition { it.code in favoriteCodes }
+    val menuItems = favorites + others
+
     Box {
         OutlinedButton(
             onClick = { expanded.value = true },
@@ -36,6 +47,19 @@ fun CurrencyDropdown(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.weight(1f)
             )
+            if (selectedCurrency != null) {
+                IconButton(
+                    onClick = { onToggleFavorite(selectedCurrency.code) },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    val isFavorite = favoriteCodes.contains(selectedCurrency.code)
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                        contentDescription = "Избранное",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = "Открыть список"
@@ -46,12 +70,25 @@ fun CurrencyDropdown(
             expanded = expanded.value,
             onDismissRequest = { expanded.value = false }
         ) {
-            items.forEach { currency ->
+            menuItems.forEach { currency ->
+                val isFavorite = favoriteCodes.contains(currency.code)
                 DropdownMenuItem(
                     text = { Text(
                         "${currency.code} — ${currency.name}",
                         style = MaterialTheme.typography.bodyMedium
                     ) },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = { onToggleFavorite(currency.code) },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                                contentDescription = "Избранное",
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    },
                     onClick = {
                         onSelect(currency)
                         expanded.value = false
